@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  title: AIGES API
+  description: Task API with auth and role-based access
+  version: "1.0"
+servers:
+  - url: http://localhost:5000/api/v1
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: { type: string }
+                password: { type: string }
+      responses:
+        "201":
+          description: User registered
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: { type: string }
+                password: { type: string }
+      responses:
+        "200":
+          description: JWT token
+  /tasks:
+    post:
+      security: [{ bearerAuth: [] }]
+      summary: Create task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                description: { type: string }
+      responses:
+        "201":
+          description: Task created
+    get:
+      security: [{ bearerAuth: [] }]
+      summary: Get all tasks (Admin only)
+      responses:
+        "200":
+          description: List of tasks
+  /tasks/{id}:
+    get:
+      security: [{ bearerAuth: [] }]
+      summary: Get single task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Task details
+    put:
+      security: [{ bearerAuth: [] }]
+      summary: Update task (owner/admin)
+      responses:
+        "200":
+          description: Task updated
+    delete:
+      security: [{ bearerAuth: [] }]
+      summary: Delete task (owner/admin)
+      responses:
+        "200":
+          description: Task deleted
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
